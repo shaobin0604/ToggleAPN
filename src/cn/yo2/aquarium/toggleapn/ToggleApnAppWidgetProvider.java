@@ -27,7 +27,7 @@ public class ToggleApnAppWidgetProvider extends AppWidgetProvider {
     public void onEnabled(Context context) {
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(
-        		new ComponentName(context, ToggleApnAppWidgetProvider.class),
+        		new ComponentName("cn.yo2.aquarium.toggleapn", ".ToggleApnAppWidgetProvider"),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
     }
@@ -36,7 +36,7 @@ public class ToggleApnAppWidgetProvider extends AppWidgetProvider {
     public void onDisabled(Context context) {
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(
-        		new ComponentName(context, ToggleApnAppWidgetProvider.class),
+        		new ComponentName("cn.yo2.aquarium.toggleapn", ".ToggleApnAppWidgetProvider"),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
     }
@@ -92,7 +92,8 @@ public class ToggleApnAppWidgetProvider extends AppWidgetProvider {
         RemoteViews views = buildUpdate(context, -1);
         // Update specific list of appWidgetIds if given, otherwise default to all
         final AppWidgetManager gm = AppWidgetManager.getInstance(context);
-        gm.updateAppWidget(new ComponentName(context, ToggleApnAppWidgetProvider.class), views);
+        
+        gm.updateAppWidget(new ComponentName(context.getApplicationContext(), ToggleApnAppWidgetProvider.class), views);
     }
     
     /**
