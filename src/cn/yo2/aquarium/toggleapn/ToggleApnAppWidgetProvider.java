@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.telephony.TelephonyManager;
@@ -137,7 +138,7 @@ public class ToggleApnAppWidgetProvider extends AppWidgetProvider {
     private static final int STATE_UNKNOWN = 4;
     private static final int STATE_INTERMEDIATE = 5;
     
-    private static final StateTracker sDataState = new DataStateTracker();
+    private static final StateTracker sDataState = new MobileDataStateTracker();
     
     /**
      * The state machine for Data, Wifi and Bluetooth toggling, tracking
@@ -295,7 +296,7 @@ public class ToggleApnAppWidgetProvider extends AppWidgetProvider {
     /**
      * Subclass of StateTracker to get/set Data state.
      */
-    private static final class DataStateTracker extends StateTracker {
+    private static final class MobileDataStateTracker extends StateTracker {
     	
         @Override
         public int getActualState(Context context) {
@@ -310,24 +311,30 @@ public class ToggleApnAppWidgetProvider extends AppWidgetProvider {
 
         @Override
         protected void requestStateChange(Context context, boolean desiredState) {
-            ITelephony telephony = ITelephony.Stub.asInterface(ServiceManager.getService("phone"));
-            
-            if (telephony != null) {
-            	if (desiredState) {
-            		try {
-						telephony.enableDataConnectivity();
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-            	} else {
-            		try {
-						telephony.disableDataConnectivity();
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-            	}
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
+            	ITelephony telephony = ITelephony.Stub.asInterface(ServiceManager.getService("phone"));
+            	if (telephony != null) {
+                	if (desiredState) {
+                		try {
+    						telephony.enableDataConnectivity();
+    					} catch (RemoteException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					}
+                	} else {
+                		try {
+    						telephony.disableDataConnectivity();
+    					} catch (RemoteException e) {
+    						// TODO Auto-generated catch block
+    						e.printStackTrace();
+    					}
+                	}
+                }
+            } else {
+            	ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            	if (connectivityManager != null) {
+           			connectivityManager.setMobileDataEnabled(desiredState);
+                }
             }
         }
 

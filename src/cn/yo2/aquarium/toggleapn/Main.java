@@ -1,6 +1,8 @@
 package cn.yo2.aquarium.toggleapn;
 
 import android.app.Activity;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -13,7 +15,8 @@ import com.android.internal.telephony.ITelephony;
 public class Main extends Activity implements OnClickListener {
 	
 	private ITelephony mITelephony;
-	private CheckBox m_DataToggle;
+	private CheckBox mDataToggle;
+	private ConnectivityManager mConnectivityManager;
 	
 	
     /** Called when the activity is first created. */
@@ -22,26 +25,39 @@ public class Main extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        m_DataToggle = (CheckBox) findViewById(R.id.data_toggle);
-        m_DataToggle.setOnClickListener(this);
+        mDataToggle = (CheckBox) findViewById(R.id.data_toggle);
+        mDataToggle.setOnClickListener(this);
         
-        mITelephony = ITelephony.Stub.asInterface(ServiceManager.getService("phone"));
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
+        	mITelephony = ITelephony.Stub.asInterface(ServiceManager.getService("phone"));
+        } else {
+        	mConnectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        }
     }
     
     
     
+    
     public void onClick(View v) {
-		if (v == m_DataToggle) {
-			if (m_DataToggle.isChecked()) {
+		if (v == mDataToggle) {
+			if (mDataToggle.isChecked()) {
 				try {
-					mITelephony.enableDataConnectivity();
+					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
+						mITelephony.enableDataConnectivity();
+					} else {
+						mConnectivityManager.setMobileDataEnabled(true);
+					}
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {
 				try {
-					mITelephony.disableDataConnectivity();
+					if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
+						mITelephony.disableDataConnectivity();
+					} else {
+						mConnectivityManager.setMobileDataEnabled(false);
+					}
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -57,9 +73,14 @@ public class Main extends Activity implements OnClickListener {
     	super.onResume();
     	
     	try {
-			boolean possible = mITelephony.isDataConnectivityPossible();
+			boolean possible;
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
+				possible = mITelephony.isDataConnectivityPossible();
+			} else {
+				possible = mConnectivityManager.getMobileDataEnabled();
+			}
 			
-			m_DataToggle.setChecked(possible);
+			mDataToggle.setChecked(possible);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
