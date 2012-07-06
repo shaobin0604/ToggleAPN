@@ -1,6 +1,8 @@
 # built application files
-bin/*.apk
-bin/*.ap_
+bin
+
+# generate application files
+gen
 
 # files for the dex VM
 *.dex
@@ -15,8 +17,8 @@ bin/*.ap_
 *~
 
 # proguard generated files
-proguard/*
+proguard
 
 # framework lib files
-libs/*
+libs
 
