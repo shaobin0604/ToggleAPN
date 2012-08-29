@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cn.yo2.aquarium.toggleapn"
     android:versionCode="20120706"
     android:versionName="1.2.0" >
@@ -7,6 +8,9 @@
     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -23,6 +27,8 @@
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
+
+        <!--
         <activity
             android:name=".Main"
             android:label="@string/app_name" >
@@ -32,10 +38,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        -->
+
+        <activity
+            android:name=".WhiteScreenActivity"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
 
         <receiver
             android:name=".ToggleApnAppWidgetProvider"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            tools:ignore="ExportedReceiver" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
